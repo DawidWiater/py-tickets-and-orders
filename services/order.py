@@ -7,11 +7,14 @@ from django.db import transaction
 
 def create_order(tickets: list[dict],
                  username: str,
-                 date: Optional[datetime] = None) -> Order:
+                 date: Optional[datetime.datetime] = None) -> Order:
     with transaction.atomic():
         try:
             user = User.objects.get(username=username)
-            order = Order.objects.create(user=user, created_at=date)
+            order = Order.objects.create(
+                user=user,
+                created_at=date or datetime.datetime.now()
+            )
             if date:
                 order.created_at = date
             else:

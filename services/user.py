@@ -1,5 +1,7 @@
 from typing import Optional
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from db.models import User
 
 
@@ -24,7 +26,10 @@ def create_user(
 
 
 def get_user(user_id: int) -> User:
-    return User.objects.get(id=user_id)
+    try:
+        return User.objects.get(id=user_id)
+    except ObjectDoesNotExist:
+        raise ObjectDoesNotExist(f"User with id {user_id} does not exist")
 
 
 def update_user(user_id: int,
@@ -33,13 +38,14 @@ def update_user(user_id: int,
                 email: Optional[str] = None,
                 first_name: Optional[str] = None,
                 last_name: Optional[str] = None) -> User:
-    user = User.objects.get(id=user_id)
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        raise ObjectDoesNotExist(f"User with id {user_id} does not exist")
     user_dict = {}
 
     if username:
         user_dict["username"] = username
-    if password:
-        user_dict["password"] = password
     if email:
         user_dict["email"] = email
     if first_name:
@@ -48,8 +54,7 @@ def update_user(user_id: int,
         user_dict["last_name"] = last_name
 
     for key, value in user_dict.items():
-        if key != "password":
-            setattr(user, key, value)
+        setattr(user, key, value)
     if password:
         user.set_password(password)
 

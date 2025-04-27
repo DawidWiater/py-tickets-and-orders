@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Index
+import datetime
 
 
 class User(AbstractUser):
@@ -65,7 +66,7 @@ class MovieSession(models.Model):
 
 
 class Order(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=datetime.datetime.now)
     user = models.ForeignKey(to=User,
                              on_delete=models.CASCADE,
                              related_name="orders")
@@ -111,6 +112,17 @@ class Ticket(models.Model):
                         f")"
                     ]
                 })
+        if Ticket.objects.filter(
+                movie_session=self.movie_session,
+                row=self.row,
+                seat=self.seat
+        ).exists():
+            raise ValidationError({
+                "seat": [
+                    f"This seat (row: {self.row}, "
+                    f"seat: {self.seat}) is already taken for this session."
+                ]
+            })
 
     def save(self, *args, **kwargs) -> None:
         self.full_clean()
