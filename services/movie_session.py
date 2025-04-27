@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
+from datetime import datetime
 
 from db.models import MovieSession, Ticket
 
@@ -7,8 +8,10 @@ from db.models import MovieSession, Ticket
 def create_movie_session(
         movie_show_time: str, movie_id: int, cinema_hall_id: int
 ) -> MovieSession:
+    show_time = datetime.strptime(movie_show_time, "%Y-%m-%d %H:%M:%S")
+
     return MovieSession.objects.create(
-        show_time=movie_show_time,
+        show_time=show_time,
         movie_id=movie_id,
         cinema_hall_id=cinema_hall_id,
     )

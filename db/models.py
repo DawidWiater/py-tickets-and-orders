@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Index
-import datetime
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -66,7 +66,7 @@ class MovieSession(models.Model):
 
 
 class Order(models.Model):
-    created_at = models.DateTimeField(default=datetime.datetime.now)
+    created_at = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(to=User,
                              on_delete=models.CASCADE,
                              related_name="orders")

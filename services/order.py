@@ -1,5 +1,6 @@
 from db.models import Order, Ticket, User
 from typing import Optional, Any
+from django.utils import timezone
 import datetime
 
 from django.db import transaction
@@ -13,13 +14,8 @@ def create_order(tickets: list[dict],
             user = User.objects.get(username=username)
             order = Order.objects.create(
                 user=user,
-                created_at=date or datetime.datetime.now()
+                created_at=date or timezone.now(),
             )
-            if date:
-                order.created_at = date
-            else:
-                order.created_at = datetime.datetime.now()
-            order.save()
 
             print(f"Creating order with date: {order.created_at}")
 
